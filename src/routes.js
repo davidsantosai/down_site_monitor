@@ -1,3 +1,3 @@
-const { health } = require("./handlers");
+const { health, users } = require("./handlers");
 
-module.exports = { "api/health": health };
+module.exports = { "api/health": health, "api/users": users };
