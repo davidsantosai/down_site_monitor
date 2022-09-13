@@ -1,11 +1,13 @@
 const develop = {
   httpPort: 3000,
   envName: "develop",
+  secret: "key2022",
 };
 
 const main = {
   httpPort: 4000,
   envName: "production",
+  secret: "key2023",
 };
 
 const environments = {
