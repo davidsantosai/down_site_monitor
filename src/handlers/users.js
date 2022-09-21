@@ -96,7 +96,7 @@ module.exports = {
     if (!phone) {
       callback(400, { status: 400, error: "Missing required field" });
     } else {
-      /* TO DO: Implement Token validation in user GET request */
+      /* Implement Token validation in user GET request */
       const token =
         typeof data.headers.token === "string" ? data.headers.token : false;
 
