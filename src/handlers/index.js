@@ -1,4 +1,5 @@
 const userHandlers = require("./users");
+const tokenHandlers = require("./tokens");
 
 module.exports = {
   health: function (data, callback) {
@@ -14,6 +15,14 @@ module.exports = {
     } else {
       /* Implement methods and call to user handler */
       userHandlers[data.method](data, callback);
+    }
+  },
+  tokens: function (data, callback) {
+    const acceptableMethods = ["get", "post"];
+    if (!acceptableMethods.includes(data.method)) {
+      callback(405, { status: 405, data: "Not allowed" });
+    } else {
+      tokenHandlers[data.method](data, callback);
     }
   },
 };

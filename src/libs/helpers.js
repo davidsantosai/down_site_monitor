@@ -31,4 +31,49 @@ const hash = function (string) {
   }
 };
 
-module.exports = { parseJSONToObject, hash };
+/**
+ * Create random string to use as token
+ * @param {number} strLength
+ * @returns {string | boolean}
+ */
+const createRandomString = function (strLength) {
+  strLength =
+    typeof strLength === "number" && strLength > 0 ? strLength : false;
+  if (!strLength) {
+    return false;
+  } else {
+    const possibleCharacters = "abcdefghijklmnopqrstuvwxyz";
+    let token = "";
+    for (let i = 0; i <= strLength; i++) {
+      const randomValue = possibleCharacters.charAt(
+        Math.floor(Math.random() * possibleCharacters.length)
+      );
+      token += randomValue;
+    }
+
+    return token;
+  }
+};
+
+/**
+ *  Verifies if token is still valid (not expired) + Verifies if phone matches token
+ *  @param {string} tokenId
+ *  @param {string} phone
+ *  @param {Function} callback
+ *  @return {boolean}
+ */
+const verifyToken = function (tokenId, phone, callback) {
+  require("../libs/data").read("tokens", tokenId, (error, tokenData) => {
+    if (error || !tokenData) {
+      callback(false);
+    } else {
+      if (tokenData.phone !== phone || tokenData.expires < Date.now()) {
+        callback(false);
+      } else {
+        callback(true);
+      }
+    }
+  });
+};
+
+module.exports = { parseJSONToObject, hash, createRandomString, verifyToken };
