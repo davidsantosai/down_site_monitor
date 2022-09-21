@@ -1,5 +1,5 @@
 const _data = require("../libs/data");
-const { hash } = require("../libs/helpers");
+const { hash, verifyToken } = require("../libs/helpers");
 
 module.exports = {
   post: function (data, callback) {
@@ -78,6 +78,46 @@ module.exports = {
           callback(401, { status: 401, error: "Unauthorized user" });
         }
       });
+    }
+  },
+  get: function (data, callback) {
+    /**
+     * User - get
+     * Required data: phone
+     * Optional data: none
+     */
+    const phone =
+      data.queryStringObject.phone &&
+      typeof data.queryStringObject.phone === "string" &&
+      data.queryStringObject.phone.trim().length === 10
+        ? data.queryStringObject.phone.trim()
+        : false;
+
+    if (!phone) {
+      callback(400, { status: 400, error: "Missing required field" });
+    } else {
+      /* TO DO: Implement Token validation in user GET request */
+      const token =
+        typeof data.headers.token === "string" ? data.headers.token : false;
+
+      if (!token) {
+        callback(403, { status: 403, error: "Forbidden" });
+      } else {
+        verifyToken(token, phone, (valid) => {
+          if (!valid) {
+            callback(403, { status: 403, error: "Forbidden" });
+          } else {
+            _data.read("users", phone, (error, userData) => {
+              if (error || !userData) {
+                callback(404, { status: 404, error: "User not found" });
+              } else {
+                delete userData.hashPassword;
+                callback(200, { status: 200, data: userData });
+              }
+            });
+          }
+        });
+      }
     }
   },
 };
