@@ -120,4 +120,83 @@ module.exports = {
       }
     }
   },
+  delete: function (data, callback) {
+    /*
+     * User - delete
+     * Required data: phone
+     * Optional data: none
+     */
+    const phone =
+      data.queryStringObject.phone &&
+      typeof data.queryStringObject.phone === "string" &&
+      data.queryStringObject.phone.trim().length === 10
+        ? data.queryStringObject.phone.trim()
+        : false;
+
+    if (!phone) {
+      callback(400, { status: 400, error: "Missing required field" });
+    } else {
+      _data.read("users", phone, (error, userData) => {
+        if (error || !userData) {
+          callback(404, { status: 404, error: "User not found" });
+        } else {
+          const token =
+            typeof data.headers.token === "string" ? data.headers.token : false;
+
+          if (!token) {
+            callback(403, { status: 403, error: "Forbidden" });
+          } else {
+            verifyToken(token, phone, (valid) => {
+              if (!valid) {
+                callback(403, { status: 403, error: "Forbidden" });
+              } else {
+                /* Implement delete function in data*/
+                _data.delete("users", phone, (error) => {
+                  if (error) {
+                    callback(500, {
+                      status: 500,
+                      error: "Unable to delete user",
+                    });
+                  } else {
+                    const userChecks =
+                      typeof userData.checks === "object" &&
+                      userData.checks instanceof Array
+                        ? userData.checks
+                        : [];
+
+                    if (userChecks.length) {
+                      let checksDeleted = 0;
+                      let deletionErrors = false;
+
+                      userChecks.forEach((checkId) => {
+                        _data.delete("checks", checkId, (error) => {
+                          if (error) {
+                            deletionErrors = true;
+                          }
+                          checksDeleted++;
+
+                          if (checksDeleted === userChecks.length) {
+                            if (!deletionErrors) {
+                              callback(200, { status: 200, data: "OK" });
+                            } else {
+                              callback(500, {
+                                status: 500,
+                                error: "Error trying to delete user checks",
+                              });
+                            }
+                          }
+                        });
+                      });
+                    } else {
+                      callback(200, { status: 200, data: "OK" });
+                    }
+                  }
+                });
+              }
+            });
+          }
+        }
+      });
+    }
+  },
 };
