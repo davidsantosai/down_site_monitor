@@ -48,9 +48,58 @@ const lib = {
       }
     );
   },
-  update: function () {},
-  delete: function () {},
-  list: function () {},
+  update: function (dir, file, data, callback) {
+    fs.open(
+      `${lib.baseDir}/${dir}/${file}.json`,
+      "r+",
+      (error, fileDescriptor) => {
+        if (error) {
+          callback("Error trying to open file");
+        } else {
+          const stringData = JSON.stringify(data);
+          fs.truncate(fileDescriptor, (error) => {
+            if (error) {
+              callback("Error truncating the file");
+            } else {
+              fs.writeFile(fileDescriptor, stringData, (error) => {
+                if (error) {
+                  callback("Error writing file");
+                } else {
+                  fs.close(fileDescriptor, (error) => {
+                    if (error) {
+                      callback("Error trying to close file");
+                    } else {
+                      callback(false);
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      }
+    );
+  },
+  delete: function (dir, file, callback) {
+    fs.unlink(`${lib.baseDir}/${dir}/${file}.json`, (error) => {
+      if (error) {
+        callback("Error trying to delete file");
+      } else {
+        callback(false);
+      }
+    });
+  },
+  list: function (dir, callback) {
+    fs.readdir(`${lib.baseDir}/${dir}/`, (error, data) => {
+      if (error || !data || !data.length) {
+        callback("Error trying to acquire data");
+      } else {
+        const filesName = [];
+        data.forEach((file) => filesName.push(file.replace(".json", "")));
+        callback(false, filesName);
+      }
+    });
+  },
 };
 
 module.exports = { ...lib };
