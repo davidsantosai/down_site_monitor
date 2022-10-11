@@ -199,4 +199,84 @@ module.exports = {
       });
     }
   },
+  put: function (data, callback) {
+    /*
+     * User - update
+     * Required data: phone
+     * Optional data: firstName, lastName or password
+     */
+
+    const phone =
+      data.payload.phone &&
+      typeof data.payload.phone === "string" &&
+      data.payload.phone.trim().length === 10
+        ? data.payload.phone.trim()
+        : false;
+
+    if (!phone) {
+      callback(400, { status: 400, error: "Missing required field" });
+    } else {
+      const updateUser = {};
+      updateUser.phone = phone;
+
+      data.payload.firstName &&
+      typeof data.payload.firstName === "string" &&
+      data.payload.firstName.trim().length
+        ? (updateUser.firstName = data.payload.firstName.trim())
+        : false;
+
+      data.payload.lastName &&
+      typeof data.payload.lastName === "string" &&
+      data.payload.lastName.trim().length
+        ? (updateUser.lastName = data.payload.lastName)
+        : false;
+
+      data.payload.password &&
+      typeof data.payload.password === "string" &&
+      data.payload.password.trim().length > 10
+        ? (updateUser.hashPassword = hash(data.payload.password.trim()))
+        : false;
+
+      if (Object.keys(updateUser).length < 2) {
+        callback(400, { status: 400, error: "Missing fields to update" });
+      } else {
+        const token =
+          data.headers.token && typeof data.headers.token === "string"
+            ? data.headers.token
+            : false;
+
+        if (!token) {
+          callback(403, { status: 403, error: "Forbidden" });
+        } else {
+          verifyToken(token, phone, (valid) => {
+            if (!valid) {
+              callback(403, { status: 403, error: "Missing required token" });
+            } else {
+              /* Implement user update */
+              _data.read("users", phone, (error, userData) => {
+                if (error || !userData) {
+                  callback(404, { status: 404, error: "User not found" });
+                } else {
+                  Object.keys(updateUser).map((key) => {
+                    userData[key] = updateUser[key];
+                  });
+
+                  _data.update("users", phone, userData, (error) => {
+                    if (error) {
+                      callback(500, {
+                        status: 500,
+                        error: "Unable to update user",
+                      });
+                    } else {
+                      callback(200, { status: 200, data: "OK" });
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      }
+    }
+  },
 };
