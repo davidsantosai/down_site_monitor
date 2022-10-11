@@ -3,6 +3,11 @@ const develop = {
   envName: "develop",
   secret: "key2022",
   tokenLength: 20,
+  twilio: {
+    fromPhone: "xxxxxxx",
+    accountSID: "ACb00f56a643afef04cdd159402f090b34",
+    authToken: "1763bc527c2b0a62666ae88548cc6260",
+  },
 };
 
 const main = {
@@ -10,6 +15,11 @@ const main = {
   envName: "production",
   secret: "key2023",
   tokenLength: 20,
+  twilio: {
+    fromPhone: "xxxxxxx",
+    accountSID: "ACb00f56a643afef04cdd159402f090b34",
+    authToken: "1763bc527c2b0a62666ae88548cc6260",
+  },
 };
 
 const environments = {
