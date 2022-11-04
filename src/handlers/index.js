@@ -1,5 +1,6 @@
 const userHandlers = require("./users");
 const tokenHandlers = require("./tokens");
+const alertsHandlers = require("./alerts");
 
 module.exports = {
   health: function (data, callback) {
@@ -23,6 +24,14 @@ module.exports = {
       callback(405, { status: 405, data: "Not allowed" });
     } else {
       tokenHandlers[data.method](data, callback);
+    }
+  },
+  alerts: function (data, callback) {
+    const acceptableMethods = ["get", "post", "put", "delete"];
+    if (!acceptableMethods.includes(data.method)) {
+      callback(405, { status: 405, data: "Not allowed" });
+    } else {
+      alertsHandlers[data.method](data, callback);
     }
   },
 };
