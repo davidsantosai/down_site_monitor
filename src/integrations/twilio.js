@@ -20,7 +20,7 @@ module.exports = {
     } else {
       const payload = {
         From: config.twilio.fromPhone,
-        To: `+57${phone}`,
+        To: `+1${phone}`,
         Body: message,
       };
 

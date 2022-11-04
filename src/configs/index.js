@@ -4,10 +4,11 @@ const develop = {
   secret: "key2022",
   tokenLength: 20,
   twilio: {
-    fromPhone: "xxxxxxx",
+    fromPhone: "4246780753",
     accountSID: "ACb00f56a643afef04cdd159402f090b34",
-    authToken: "1763bc527c2b0a62666ae88548cc6260",
+    authToken: "2d8700608924ab2508c684fc2c05e874",
   },
+  maxAlertsNumber: 3,
 };
 
 const main = {
@@ -16,10 +17,11 @@ const main = {
   secret: "key2023",
   tokenLength: 20,
   twilio: {
-    fromPhone: "xxxxxxx",
+    fromPhone: "4246780753",
     accountSID: "ACb00f56a643afef04cdd159402f090b34",
-    authToken: "1763bc527c2b0a62666ae88548cc6260",
+    authToken: "2d8700608924ab2508c684fc2c05e874",
   },
+  maxAlertsNumber: 3,
 };
 
 const environments = {
