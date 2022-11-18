@@ -325,23 +325,43 @@ module.exports = {
     if (!id) {
       callback(400, { status: 400, error: "Missing valid id" });
     } else {
-      _data.read("alerts", id, (error, alertData) => {
-        if (error || !alertData) {
-          callback(500, { status: 500, error: "Server Error" });
+      const token =
+        typeof data.headers.token === "string" ? data.headers.token : false;
+
+      if (Object.keys(updateAlert).length < 2) {
+        callback(400, { status: 400, error: "Missing parameters" });
+      } else {
+        if (!token) {
+          callback(403, { status: 403, error: "Forbidden" });
         } else {
-          const token =
-            typeof data.headers.token === "string" ? data.headers.token : false;
-          if (!token) {
-            callback(403, { status: 403, error: "Forbidden" });
-          } else {
-            verifyToken(token, alertData.userPhone, (valid) => {
-              if (!valid) {
-                callback(403, { status: 403, error: "Forbidden" });
-              }
-            });
-          }
+          _data.read("alerts", id, (error, alertData) => {
+            if (error || !alertData) {
+              callback(400, { status: 400, error: "Alert not found" });
+            } else {
+              verifyToken(token, alertData.userPhone, (valid) => {
+                if (!valid) {
+                  callback(403, { status: 403, error: "Forbidden" });
+                } else {
+                  /**For each Update Alert assing value to Alert */
+                  Object.keys(updateAlert).map(
+                    (key) => (alertData[key] = updateAlert[key])
+                  );
+                  _data.update("alerts", id, alertData, (error) => {
+                    if (error) {
+                      callback(500, {
+                        status: 500,
+                        error: "Unable to update alert",
+                      });
+                    } else {
+                      callback(200, { status: 200, data: "OK" });
+                    }
+                  });
+                }
+              });
+            }
+          });
         }
-      });
+      }
     }
   },
 };
