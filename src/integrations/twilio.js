@@ -20,14 +20,14 @@ module.exports = {
     } else {
       const payload = {
         From: config.twilio.fromPhone,
-        To: `+1${phone}`,
+        To: `+57${phone}`,
         Body: message,
       };
 
       const stringifyPayload = new URLSearchParams(payload).toString();
 
       const requestConfig = {
-        protocol: "https",
+        protocol: "https:",
         hostname: "api.twilio.com",
         method: "POST",
         path: `/2010-04-01/Accounts/${config.twilio.accountSID}/Messages.json`,
