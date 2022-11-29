@@ -1,0 +1,1 @@
+{"alert":{"id":"wgviusuthvgxpuraawmgl","userPhone":"3052928524","protocol":"http","url":"www.twitter.com","method":"get","successCodes":[301],"timeoutSeconds":6,"state":"up","lastChecked":1669412601458},"outcome":{"error":false,"responseCode":301},"state":"up","warning":false,"time":1669413005477}
